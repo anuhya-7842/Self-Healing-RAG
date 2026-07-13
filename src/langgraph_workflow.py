@@ -1,5 +1,4 @@
 from typing import TypedDict
-from urllib import response
 from langgraph.graph import StateGraph, END
 from sentence_transformers import SentenceTransformer
 from google import genai
@@ -7,21 +6,26 @@ from dotenv import load_dotenv
 import chromadb
 import os
 
-# Load environment variables
+# -------------------------
+# Load Environment Variables
+# -------------------------
 load_dotenv()
 
-# Gemini Client
 client_gemini = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-# Embedding Model
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Persistent ChromaDB
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+# Global collection
+collection = None
 
-collection = chroma_client.get_collection("rag_docs")
+
+def load_collection():
+    global collection
+
+    chroma_client = chromadb.PersistentClient(path="./chroma_db")
+    collection = chroma_client.get_collection("rag_docs")
 
 
 class GraphState(TypedDict):
@@ -33,9 +37,14 @@ class GraphState(TypedDict):
 
 
 # -------------------------
-# Retriever Node
+# Retriever
 # -------------------------
 def retrieve(state: GraphState):
+
+    global collection
+
+    if collection is None:
+        load_collection()
 
     print("\n[RETRIEVE]")
     print("Query:", state["query"])
@@ -58,19 +67,16 @@ def retrieve(state: GraphState):
         "context": context
     }
 
+
 # -------------------------
-# Generator Node (Gemini)
+# Generator
 # -------------------------
 def generate(state: GraphState):
 
     print("\n[GENERATE]")
-    print("Generating answer...")
 
-    # Intentionally wrong answer on first attempt
     if state["retries"] == 0:
         answer = "LangGraph was created by Google in 2025."
-
-        print("Generated Answer:", answer)
 
         return {
             "answer": answer
@@ -85,10 +91,10 @@ If the answer is not present in the context, say:
 "I don't have enough information."
 
 Context:
-{state['context']}
+{state["context"]}
 
 Question:
-{state['query']}
+{state["query"]}
 
 Answer:
 """
@@ -98,21 +104,15 @@ Answer:
         contents=prompt
     )
 
-    answer = response.text.strip()
-
-    print("Generated Answer:", answer)
-
     return {
-        "answer": answer
+        "answer": response.text.strip()
     }
 
+
 # -------------------------
-# Critic Node (Gemini)
+# Critic
 # -------------------------
 def critic(state: GraphState):
-
-    print("\n[CRITIC]")
-    print("Evaluating answer...")
 
     prompt = f"""
 You are an AI evaluator.
@@ -123,22 +123,21 @@ Context:
 Answer:
 {state["answer"]}
 
-If the answer is supported by the context, reply with only:
+If the answer is supported by the context reply only:
 
 approved
 
-Otherwise reply with only:
+Otherwise reply only:
 
 rejected
 """
+
     response = client_gemini.models.generate_content(
         model="gemini-3.1-flash-lite",
         contents=prompt
     )
 
     verdict = response.text.strip().lower()
-
-    print("Critic Verdict:", verdict)
 
     if "approved" in verdict:
         return {"status": "approved"}
@@ -147,18 +146,15 @@ rejected
 
 
 # -------------------------
-# Query Rewriter Node
+# Rewrite Query
 # -------------------------
 def rewrite_query(state: GraphState):
-
-    print("\n[REWRITE QUERY]")
-    print("Original Query:", state["query"])
 
     prompt = f"""
 Rewrite the following query to improve document retrieval.
 
 Query:
-{state['query']}
+{state["query"]}
 
 Return only the rewritten query.
 """
@@ -168,28 +164,25 @@ Return only the rewritten query.
         contents=prompt
     )
 
-    new_query = response.text.strip()
-
-    print("Rewritten Query:", new_query)
-
     return {
-        "query": new_query,
+        "query": response.text.strip(),
         "retries": state["retries"] + 1
     }
 
+
+# -------------------------
+# Fallback
+# -------------------------
 def fallback(state: GraphState):
 
-    print("\n[FALLBACK]")
-    print("Maximum retries reached.")
-
     return {
-        "answer": "I don't have enough information in the knowledge base to answer this question.",
+        "answer": "I don't have enough information in the knowledge base.",
         "status": "failed"
     }
 
 
 # -------------------------
-# Routing Logic
+# Routing
 # -------------------------
 def route_after_critic(state: GraphState):
 
@@ -214,7 +207,6 @@ workflow.add_node("rewrite_query", rewrite_query)
 workflow.add_node("fallback", fallback)
 
 workflow.set_entry_point("retrieve")
-workflow.add_edge("fallback", END)
 
 workflow.add_edge("retrieve", "generate")
 workflow.add_edge("generate", "critic")
@@ -225,14 +217,14 @@ workflow.add_conditional_edges(
 )
 
 workflow.add_edge("rewrite_query", "retrieve")
+workflow.add_edge("fallback", END)
 
 graph = workflow.compile()
 
 
-# -------------------------
-# Execute Workflow
-# -------------------------
 if __name__ == "__main__":
+
+    load_collection()
 
     query = input("Ask a question: ")
 
@@ -246,8 +238,4 @@ if __name__ == "__main__":
         }
     )
 
-    print("\nFINAL RESULT")
-    print("=" * 50)
-    print("Query:", result["query"])
-    print("Answer:", result["answer"])
-    print("Status:", result["status"])
+    print(result)

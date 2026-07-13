@@ -1,17 +1,14 @@
 from pypdf import PdfReader
 
-pdf_path = r"data/LangGraph V1 Essentials.pdf"
+def load_pdf(pdf_path):
+    reader = PdfReader(pdf_path)
 
-reader = PdfReader(pdf_path)
+    text = ""
 
-print("Number of pages:", len(reader.pages))
+    for page in reader.pages:
+        page_text = page.extract_text()
 
-text = ""
+        if page_text:
+            text += page_text + "\n"
 
-for page in reader.pages:
-    page_text = page.extract_text()
-    if page_text:
-        text += page_text + "\n"
-
-print("\nFirst 2000 Characters:\n")
-print(text[:2000])
+    return text

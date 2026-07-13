@@ -1,5 +1,0 @@
-LangGraph is a framework for building stateful, multi-agent applications with LLMs.
-
-LangChain is a framework for developing applications powered by language models.
-
-Retrieval-Augmented Generation (RAG) combines document retrieval with LLM generation to improve accuracy.
