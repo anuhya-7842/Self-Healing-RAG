@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import chromadb
 import os
 
+from torchgen import model
+
 # -------------------------
 # Load Environment Variables
 # -------------------------
@@ -15,7 +17,16 @@ client_gemini = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+# embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding_model = None
+
+def get_embedding_model():
+    global embedding_model
+
+    if embedding_model is None:
+        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return embedding_model
 
 # Global collection
 collection = None
@@ -49,7 +60,8 @@ def retrieve(state: GraphState):
     print("\n[RETRIEVE]")
     print("Query:", state["query"])
 
-    query_embedding = embedding_model.encode(state["query"])
+    model = get_embedding_model()
+    query_embedding = model.encode(state["query"])
 
     results = collection.query(
         query_embeddings=[query_embedding.tolist()],

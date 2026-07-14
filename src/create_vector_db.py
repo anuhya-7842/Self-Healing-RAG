@@ -1,10 +1,20 @@
+from pyexpat import model
+
 import chromadb
 
 from sentence_transformers import SentenceTransformer
 from pdf_loader import load_pdf
 from chunk_docs import chunk_text
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding_model = None
+
+def get_embedding_model():
+    global embedding_model
+
+    if embedding_model is None:
+        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return embedding_model
 
 
 def create_vector_db(pdf_path):
@@ -24,7 +34,8 @@ def create_vector_db(pdf_path):
 
     chunks = chunk_text(text)
 
-    embeddings = embedding_model.encode(chunks)
+    model = get_embedding_model()
+    embeddings = model.encode(chunks)
 
     collection.add(
         documents=chunks,
