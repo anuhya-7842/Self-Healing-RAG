@@ -94,7 +94,6 @@ self-healing-rag/
 - ChromaDB
 - Sentence Transformers
 - PyPDF
-- python-dotenv
 
 ---
 
