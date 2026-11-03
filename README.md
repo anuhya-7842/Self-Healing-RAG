@@ -1,6 +1,6 @@
 # Self-Healing RAG
 
-An AI-powered Retrieval-Augmented Generation (RAG) application built using **LangGraph**, **Google Gemini**, **Sentence Transformers**, **ChromaDB**, and **Streamlit**. The application allows users to upload a PDF, automatically builds a vector database, retrieves relevant information, validates generated responses, and answers questions based only on the uploaded document.
+AI-powered PDF question answering system with self-healing Retrieval-Augmented Generation (RAG). Users can upload PDFs, extract and index content, retrieve relevant information, and receive grounded answers using LangGraph, Google Gemini, ChromaDB, and Streamlit. The system validates generated responses and retries automatically when necessary, improving reliability and reducing unsupported answers.
 
 ---
 
