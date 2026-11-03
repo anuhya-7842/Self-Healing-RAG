@@ -97,6 +97,53 @@ self-healing-rag/
 
 ---
 
+## Prerequisites
+
+- Python 3.10 or later
+- Git
+- A Google Gemini API key
+- An internet connection (the embedding model may be downloaded the first time the app runs)
+
+## Installation
+
+1. Clone the repository and move into the project directory:
+
+   ```bash
+   git clone https://github.com/anuhya-7842/Self-Healing-RAG.git
+   cd Self-Healing-RAG
+   ```
+
+2. Create and activate a virtual environment:
+
+   **macOS / Linux**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+   **Windows (PowerShell)**
+   ```powershell
+   py -m venv .venv
+   .venv\Scripts\Activate.ps1
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+## Configure your Gemini API key
+
+Create a `.env` file in the project root, alongside `app.py`, and add your Gemini API key:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Replace the placeholder with your own key. Keep it private and do not commit the `.env` file to Git; it is already listed in `.gitignore`.
+
 ## Run the Application
 
 ```bash
