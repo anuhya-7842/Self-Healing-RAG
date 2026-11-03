@@ -188,11 +188,7 @@ Detecting Mental Disorders in Social Media Through Emotional Patterns – The Ca
 
 ## Future Improvements
 
-- Multiple PDF support
-- Source citations
-- Chat history
-- Conversation memory
-- Hybrid Search (Keyword + Vector)
-- FastAPI backend
-- Docker deployment
-- User authentication
+- Support multiple documents and cite source passages.
+- Preserve chat history for follow-up questions.
+- Improve retrieval with hybrid search.
+- Add deployment and access controls.
