@@ -62,6 +62,25 @@ AI-powered PDF question answering system with self-healing Retrieval-Augmented G
 
 ---
 
+---
+
+### 1. Application Homepage
+![Application Homepage](screenshots/01-homepage.png)
+
+### 2. PDF Upload
+![PDF Upload](screenshots/02-pdf-upload.png)
+
+### 3. Question and Answer Generation
+![Question and Answer](screenshots/03-question-answer.png)
+
+### 4. Retrieved Context
+![Retrieved Context](screenshots/04-retrieved-context.png)
+
+### 5. LangGraph Workflow
+![LangGraph Workflow](screenshots/05-langgraph-workflow.png)
+
+---
+
 ## Project Structure
 
 ```
