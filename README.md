@@ -95,6 +95,7 @@ self-healing-rag/
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
+├── screenshots
 │
 ├── src/
 │   ├── pdf_loader.py
@@ -102,11 +103,15 @@ self-healing-rag/
 │   ├── create_vector_db.py
 │   └── langgraph_workflow.py
 │
-├── data/
+├── .devcontainer
+│   └── devcontainer.json
+│
+├── .streamlit
+│   └── config.toml
 │
 └── chroma_db/
+    └── chroma.sqlite3
 ```
-
 ---
 
 ## Technologies Used
