@@ -64,6 +64,8 @@ AI-powered PDF question answering system with self-healing Retrieval-Augmented G
 
 ---
 
+## Screenshots
+
 ### 1. Application Homepage
 ![Application Homepage](screenshots/01-homepage.png)
 
